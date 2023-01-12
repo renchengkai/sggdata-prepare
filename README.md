@@ -6,6 +6,8 @@ install starcraft2 (development in Windows11),
 
 install requirements.txt,
 
+download sc2 replay file with map
+
 maybe a little change for your pysc2 library.
 
 ------
