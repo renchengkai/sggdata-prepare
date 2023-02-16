@@ -10,7 +10,22 @@ download sc2 replay file with map
 
 ~~maybe a little change for your pysc2 library.~~
 
->**Note**: Please make sure the <font color='red'>version</font>  of the replay file is the <font color='red'>same</font> as the <font color='red'>version</font> of your game client.
+>**Note 1**: Please make sure the <font color='red'>version</font>  of the replay file is the <font color='red'>same</font> as the <font color='red'>version</font> of your game client.
+
+>**Note 2**: Change the **path** in sc2/paths.py
+  of python package ```sc2```, or add your sc2 client location in your system environment.
+
+  ```python
+  sc2/paths.py
+  BASEDIR = {
+    "Windows": "here is the location of your starcraft II installed.",
+    "WSL1": "/mnt/c/Program Files (x86)/StarCraft II",
+    "WSL2": "/mnt/c/Program Files (x86)/StarCraft II",
+    "Darwin": "/Applications/StarCraft II",
+    "Linux": "~/StarCraftII",
+    "WineLinux": "~/.wine/drive_c/Program Files (x86)/StarCraft II",
+  }
+  ``` 
 
 ------
 ## Scripts
