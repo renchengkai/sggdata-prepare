@@ -4,7 +4,14 @@ import asyncio
 import os
 import argparse
 
+
 async def main(args):
+    if args.JsonDIR[-1] not in '/\\':
+        args.JsonDIR+='/'
+    if args.VideoDIR[-1] not in '/\\':
+        args.VideoDIR+='/'
+    if args.ReplayDIR[-1] not in '/\\':
+        args.ReplayDIR+='/'
     print(args)
     mkdir(args.JsonDIR)
     mkdir(args.VideoDIR)

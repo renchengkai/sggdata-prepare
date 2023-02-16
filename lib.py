@@ -222,8 +222,11 @@ async def generateJson(file,observed_id,args):
     with open(f'{args.JsonDIR}{os.path.basename(file).split(".")[0]} {observed_id}.json', 'w') as f:
         json.dump(data, f)
     await server._process.__aexit__()
-    closeclient()
-    closepkill()
+    try:
+        closeclient()
+        closepkill()
+    except:
+        ...
 
 
 class ObserverBot(ObserverAI):

@@ -8,27 +8,29 @@ install requirements.txt,
 
 download sc2 replay file with map
 
-maybe a little change for your pysc2 library.
+~~maybe a little change for your pysc2 library.~~
+
+>**Note**: Please make sure the <font color='red'>version</font>  of the replay file is the <font color='red'>same</font> as the <font color='red'>version</font> of your game client.
 
 ------
 ## Scripts
 
 -  extract_screen_gameloops.py
     ~~~
-    extract_screen_gameloops.py --VideoDIR your_directory --JsonDIR your_directory --ReplayDIR your_directory --NUM number_of_replay_to_process
+    python extract_screen_gameloops.py --VideoDIR your_directory --JsonDIR your_directory --ReplayDIR your_directory --NUM number_of_replay_to_process
     ~~~
     saves screenshots as video in ```VideoDIR``` and saves gameloops in ```JsonDIR```
     when replay game with gameclient renderer
 
 - generateSggData.py
   ~~~
-  generateSggData.py --VideoDIR your_directory --JsonDIR your_directory --OutputDIR your_directory
+  python generateSggData.py --VideoDIR your_directory --JsonDIR your_directory --OutputDIR your_directory
   ~~~
 
     generate Date json and txt files for sgg training
 
 - convertVideo2jpg.py
   ~~~
-  convertVideo2jpg.py --VideoDIR your_directory --OutputDIR your_directory
+  python convertVideo2jpg.py --VideoDIR your_directory --OutputDIR your_directory
   ~~~
     convert Videos to jpg files
