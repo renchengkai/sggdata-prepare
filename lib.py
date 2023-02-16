@@ -37,6 +37,28 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+en_us=True
+name = 'StarCraft II' if en_us else '《星际争霸II》'
+
+def closeclient(name=name):
+    hwnd = win32gui.FindWindow(None,name)
+    win32gui.CloseWindow(hwnd)
+    
+def closepkill(name=name):
+  hwnd = win32gui.FindWindow(None,name)
+  pid = win32process.GetWindowThreadProcessId(hwnd)
+  for i in pid:
+      try:
+          psutil.Process(i).kill()
+      except:
+          print(i)
+def grab(name=name):
+  hwnd = win32gui.FindWindow(None,name)
+  a,b,c,d= win32gui.GetWindowRect(hwnd)
+  image=ImageGrab.grab((a+8,b+32,c-8,d-8))
+  return np.array(image)
+
+
 def mkdir(path):
     if os.path.exists(path):
         return
@@ -55,6 +77,46 @@ def draw(img,bb,M=M,scaler=48):
     fig.axes.set_axis_off()
     for i in bb:
         fig.axes.add_patch(plt.Rectangle(xy=(i[0]-i[2]*scaler//2,(540-i[1]-i[2]*scaler//2-10)),height=i[2]*scaler+10,width=i[2]*scaler+10,color='red',linewidth=1,fill=False))
+
+
+async def start_replay(self, replay_path: str, realtime: bool, observed_id: int = 0):
+    ifopts = sc_pb.InterfaceOptions(
+        raw=True, score=True, show_cloaked=True, raw_affects_selection=True, raw_crop_to_playable_area=False
+    )
+    if platform.system() == "Linux":
+        replay_name = Path(replay_path).name
+        home_replay_folder = Path.home() / "Documents" / "StarCraft II" / "Replays"
+        if str(home_replay_folder / replay_name) != replay_path:
+            logger.warning(
+                f"Linux detected, please put your replay in your home directory at {home_replay_folder}. It was detected at {replay_path}"
+            )
+            raise FileNotFoundError
+        replay_path = replay_name
+
+
+    interface = sc_pb.InterfaceOptions()
+    interface.raw = True
+    interface.raw_affects_selection = True
+    interface.raw_crop_to_playable_area = True
+    interface.score = False
+    interface.show_cloaked = False
+    interface.show_burrowed_shadows = True
+    interface.show_placeholders = False
+    from pysc2.lib import point
+    point.Point(800,540).assign_to(interface.render.resolution)
+
+
+    req = sc_pb.RequestStartReplay(
+        replay_path=replay_path, observed_player_id=observed_id,disable_fog =True, realtime=realtime, 
+        options=interface
+        # options=ifopts
+    )
+
+    result = await self._execute(start_replay=req)
+    assert result.status == 4, f"{result.start_replay.error} - {result.start_replay.error_details}"
+    return result
+
+
 
 async def generateJson(file,observed_id,args):
     writer = skvideo.io.FFmpegWriter(f"{args.VideoDIR}{os.path.basename(file).split('.')[0]} {observed_id}.mp4",outputdict={"-r": str(25)})
@@ -163,23 +225,6 @@ async def generateJson(file,observed_id,args):
     closeclient()
     closepkill()
 
-def closeclient():
-    hwnd = win32gui.FindWindow(None,'《星际争霸II》')
-    win32gui.CloseWindow(hwnd)
-    
-def closepkill():
-  hwnd = win32gui.FindWindow(None,'《星际争霸II》')
-  pid = win32process.GetWindowThreadProcessId(hwnd)
-  for i in pid:
-      try:
-          psutil.Process(i).kill()
-      except:
-          print(i)
-def grab():
-  hwnd = win32gui.FindWindow(None,'《星际争霸II》')
-  a,b,c,d= win32gui.GetWindowRect(hwnd)
-  image=ImageGrab.grab((a+8,b+32,c-8,d-8))
-  return np.array(image)
 
 class ObserverBot(ObserverAI):
     """
@@ -242,7 +287,7 @@ async def debugReplay(replay_path, ai, realtime, _portconfig, base_build, data_v
             await asyncio.sleep(1)
 
 async def _setup_replay(server, replay_path, realtime, observed_id):
-    await server.start_replay(replay_path, True, observed_id)
+    await start_replay(server,replay_path, True, observed_id)
     return Client(server._ws)
 
 
